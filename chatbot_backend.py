@@ -8,8 +8,8 @@ from langchain.llms.bedrock import Bedrock
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationChain
 
-# Función para cargar el índice de recursos humanos
-def hr_index():
+# Función para cargar el índice del chatbot
+def chatbot_index():
     # Define la fuente de datos y carga los datos con PyPDFLoader
     data_load = PyPDFLoader('https://vrac.utem.cl/wp-content/uploads/2021/05/reglamento-general-de-los-estudiantes-de-pregrado.pdf')
     # Divide el texto basado en caracteres, tokens, etc. - Dividir recursivamente por caracter - ["\n\n", "\n", " ", ""]
@@ -25,12 +25,12 @@ def hr_index():
         embedding=data_embeddings,
         vectorstore_cls=FAISS
     )
-    # Crea el índice para el documento de políticas de recursos humanos
+    # Crea el índice para el documento de políticas del chatbot
     db_index = data_index.from_loaders([data_load])
     return db_index
 
-# Función para conectar al modelo Bedrock
-def hr_llm():
+# Función para conectar al modelo Bedrock del chatbot
+def chatbot_llm():
     llm = Bedrock(
         credentials_profile_name='default',
         model_id='anthropic.claude-v2',
@@ -43,17 +43,17 @@ def hr_llm():
     return llm
 
 # Función que busca la pregunta del usuario, busca la mejor coincidencia en la base de datos de vectores y envía ambos al modelo de lenguaje
-def hr_rag_response(index, question):
-    rag_llm = hr_llm()
-    hr_rag_query = index.query(question=question, llm=rag_llm)
-    return hr_rag_query
+def chatbot_rag_response(index, question):
+    rag_llm = chatbot_llm()
+    chatbot_rag_query = index.query(question=question, llm=rag_llm)
+    return chatbot_rag_query
 
 # Función para iniciar el chatbot de demostración
 def demo_chatbot():
-    demo_llm = hr_llm()
+    demo_llm = chatbot_llm()
     return demo_llm
 
-# Función para crear la memoria del chatbot
+# Función para crear la memoria del chatbot de demostración
 def demo_memory():
     llm_data = demo_chatbot
     memory = ConversationBufferMemory(llm=llm_data, max_token_limit=256)
@@ -66,8 +66,8 @@ def demo_conversation(input_text, memory):
     chat_reply = llm_conversation.predict(input=input_text)
     return chat_reply
 
-# Crear índice de recursos humanos
-hr_index_instance = hr_index()
+# Crear índice del chatbot
+chatbot_index_instance = chatbot_index()
 
 # Crear memoria para el chatbot de demostración
 demo_memory_instance = demo_memory()
