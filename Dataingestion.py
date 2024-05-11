@@ -1,26 +1,22 @@
 import os
 import logging
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.document_loaders import PyPDFLoader, CSVLoader
+from langchain_community.document_loaders import PyPDFLoader, CSVLoader
 from langchain.vectorstores.pgvector import PGVector
 from langchain_community.document_loaders import UnstructuredExcelLoader
-from langchain.embeddings import BedrockEmbeddings
-#from langchain_openai import OpenAIEmbeddings
+from langchain_community.embeddings import BedrockEmbeddings
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 # Reading Environment variables
-host = os.environ.get('HOST', '52.91.182.105').strip()
+host = os.environ.get('HOST', '54.164.65.54').strip()
 database = os.environ.get('DATABASE', 'postgres').strip()
 user = os.environ.get('USER', 'postgres').strip()
 password = os.environ.get('PASSWORD', 'utemia').strip()
 collection = os.environ.get('COLLECTION', 'utemia_collection').strip()
-#openai_key = os.environ.get('OPENAI_API_KEY', "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").strip()
-#os.environ['OPENAI_API_KEY'] = openai_key
 
 # Initialize OpenAI or Bedrock Embeddings
-#embeddings = OpenAIEmbeddings()
 embeddings = BedrockEmbeddings(credentials_profile_name= 'default',model_id='cohere.embed-multilingual-v3')
 
 
@@ -72,7 +68,6 @@ class DocumentProcessor:
         )
         print(f"{self.file_path} is Pushed successfully into {collection}")
 
-
-doc_processor = DocumentProcessor(file_path="docs")
+doc_processor = DocumentProcessor(file_path="test.pdf")
 docs = doc_processor.split_data()
 doc_processor.push_data(docs)

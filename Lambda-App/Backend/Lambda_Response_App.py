@@ -7,8 +7,6 @@ from langchain_core.runnables import RunnablePassthrough
 import json
 from datetime import datetime
 import time
-#from langchain.chat_models import ChatOpenAI
-#from langchain_openai import OpenAIEmbeddings
 from langchain_community.embeddings import BedrockEmbeddings
 from langchain.memory import PostgresChatMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
@@ -20,18 +18,16 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 # Reading Environment variables
-host = os.environ.get('HOST', '52.91.182.105').strip()
+host = os.environ.get('HOST', '54.164.65.54').strip()
 database = os.environ.get('DATABASE', 'postgres').strip()
 user = os.environ.get('USER', 'postgres').strip()
 password = os.environ.get('PASSWORD', 'utemia').strip()
 collection_name = os.environ.get('COLLECTION_NAME', 'utemia_collection').strip()
-#openai_model_id = os.environ.get('OPENAI_MODEL_ID', 'gpt-4-1106-preview').strip()
 model_temp = float(os.environ.get('MODEL_TEMP', '0.0'))
 chat_hist_msg_count = int(os.environ.get('CHAT_HISTORY_MESSAGE_COUNT', '24').strip())
-#openai_key = os.environ.get('OPENAI_API_KEY', "----YOUR API KEY----").strip()
 
 # Initialize BedrockEmbeddings and Bedrock
-# session = boto3.Session()
+session = boto3.Session()
 embeddings = BedrockEmbeddings (credentials_profile_name= 'default',model_id='cohere.embed-multilingual-v3')
 llm = BedrockLLM (credentials_profile_name='default', model_id='anthropic.claude-v2', model_kwargs={ "max_tokens_to_sample":3000, "temperature": 0.9, "top_p": 0.9})
 
@@ -74,17 +70,17 @@ class ResponseAPI:
 
             # Reading prompt from S3
             qa_system_prompt = """
-            As AWS Assistant Bot, your goal is to provide help related to AWS services, and it's questions which is asked by AWS professional. Follow these principles:
-            
-            When it's first conversation with user, always greetings them with "Hello Professional, as AWS Assistant Bot How may I assist you?"
-            Understand user's answer then give answers from available database of question and answers. 
-            If you don't know answer, just mention that "I don't know about this, please refer AWS Documentation."
-            Make sure your answer should be correct grammar, point wise, and proper explained.
-            Please generate properly formatted answer in markdown, and if it is new line or line gap in answer, please add double space then \n, so I can render that answer as markdown at my app.
-    
+            Como Asistente de IA de UTEMIA, tu objetivo es proporcionar ayuda relacionada con preguntas académicas sobre la universidad y sus servicios. Sigue estos principios:
+
+            Cuando sea la primera conversación con el estudiante, siempre salúdalo con "Hola Estudiante, como Asistente de IA de UTEMIA ¿En qué puedo ayudarte?"
+            Comprende la respuesta del estudiante y luego proporciona respuestas de la base de datos de preguntas y respuestas disponibles.
+            Si no conoces la respuesta, simplemente menciona "No conozco sobre esto, por favor consulta la documentación de la universidad."
+            Asegúrate de que tu respuesta tenga una gramática correcta, esté organizada en puntos y esté adecuadamente explicada.
+            Por favor genera la respuesta correctamente formateada en markdown. Si hay un salto de línea o espacio en la respuesta, por favor agrega un doble espacio y luego \n, para que pueda renderizar esa respuesta como markdown en mi aplicación.
+
             {context}
             """
-            logger.info(f"Got the following prompt: \n {qa_system_prompt}")
+            logger.info(f"Recibi el siguiente mensaje: \n {qa_system_prompt}")
 
             # Init connection with Postgres for storing chat history
             chat_history = PostgresChatMessageHistory(
@@ -92,10 +88,10 @@ class ResponseAPI:
                 session_id=self.session_id,
             )
             # Contextual prompt
-            contextualize_q_system_prompt = """Given a chat history and the latest user question \
-            which might reference context in the chat history, formulate a standalone question \
-            which can be understood without the chat history. Do NOT answer the question, \
-            just reformulate it if needed and otherwise return it as is."""
+            contextualize_q_system_prompt = """Dado un historial de chat y la última pregunta del usuario, 
+            que podría hacer referencia al contexto en el historial del chat, formula una pregunta independiente que 
+            pueda entenderse sin el historial del chat. NO respondas a la pregunta, simplemente reformúlala si es 
+            necesario y de lo contrario devuélvela tal como está.."""
             contextualize_q_prompt = ChatPromptTemplate.from_messages(
                 [
                     ("system", contextualize_q_system_prompt),

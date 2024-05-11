@@ -1,7 +1,7 @@
 import psycopg2
 
 # Database connection parameters
-host = '52.91.182.105'
+host = '54.164.65.54'
 dbname = 'postgres'
 user = 'postgres'
 password = 'utemia'
