@@ -18,7 +18,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 # Reading Environment variables
-host = os.environ.get('HOST', '54.164.65.54').strip()
+host = os.environ.get('HOST', '54.87.215.156').strip()
 database = os.environ.get('DATABASE', 'postgres').strip()
 user = os.environ.get('USER', 'postgres').strip()
 password = os.environ.get('PASSWORD', 'utemia').strip()

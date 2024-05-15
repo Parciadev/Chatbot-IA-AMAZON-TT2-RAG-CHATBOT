@@ -33,9 +33,9 @@ if 'messages' not in st.session_state:
     st.session_state.messages = [{"role": "assistant", "content": "Hola, soy Utemia, tu asistente de AWS. ¿En qué puedo ayudarte hoy?"}]
 
 st.set_page_config(page_title="UTEMIA - AWS RAG Chatbot ")
-st.sidebar.title("Diseñado Por Pablo Garcia Urzua")
+st.sidebar.title("Diseñado Por Pablo Garcia / German Ramirez")
 st.sidebar.info(st.session_state.session_id)
-st.sidebar.warning("Actualizar la pagina olvidara la actual conversacion!")
+st.sidebar.warning("NOTA: Actualizar la pagina olvidara la actual conversacion!")
 
 response_url = "https://vp4ohcklnc.execute-api.ap-south-1.amazonaws.com/Prod/response"
 

@@ -10,7 +10,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 # Reading Environment variables
-host = os.environ.get('HOST', '54.164.65.54').strip()
+host = os.environ.get('HOST', '54.87.215.156').strip()
 database = os.environ.get('DATABASE', 'postgres').strip()
 user = os.environ.get('USER', 'postgres').strip()
 password = os.environ.get('PASSWORD', 'utemia').strip()
@@ -18,7 +18,6 @@ collection = os.environ.get('COLLECTION', 'utemia_collection').strip()
 
 # Initialize OpenAI or Bedrock Embeddings
 embeddings = BedrockEmbeddings(credentials_profile_name= 'default',model_id='cohere.embed-multilingual-v3')
-
 
 # Build the connection string
 conenction_string = PGVector.connection_string_from_db_params(
@@ -32,6 +31,7 @@ conenction_string = PGVector.connection_string_from_db_params(
 logger.info(f"The Connection String is: {conenction_string}")
 logger.info(f"Collection name is : {collection}")
 
+docs_folder_path = os.path.join(os.path.dirname(__file__), "docs")
 
 class DocumentProcessor:
     def __init__(self, file_path):
@@ -40,6 +40,11 @@ class DocumentProcessor:
     def split_data(self):
         # Determine the file type based on the extension
         _, file_extension = os.path.splitext(self.file_path)
+
+        supported_extensions = ['.pdf', '.csv', '.xlsx']
+        if file_extension.lower() not in supported_extensions:
+            logger.info(f"Skipping file: {self.file_path} (unsupported file type)")
+            return []
 
         if file_extension.lower() == '.pdf':
             logger.info(f"Loading: {self.file_path}")
@@ -68,6 +73,9 @@ class DocumentProcessor:
         )
         print(f"{self.file_path} is Pushed successfully into {collection}")
 
-doc_processor = DocumentProcessor(file_path="test.pdf")
-docs = doc_processor.split_data()
-doc_processor.push_data(docs)
+for root, dirs, files in os.walk(docs_folder_path):
+    for file in files:
+        file_path = os.path.join(root, file)
+        doc_processor = DocumentProcessor(file_path=file_path)
+        docs = doc_processor.split_data()
+        doc_processor.push_data(docs)
