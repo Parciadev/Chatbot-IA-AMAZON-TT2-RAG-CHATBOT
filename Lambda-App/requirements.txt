@@ -12,3 +12,4 @@ psycopg-binary
 requests
 langchain_comunnity
 langchain_aws
+pgvector
