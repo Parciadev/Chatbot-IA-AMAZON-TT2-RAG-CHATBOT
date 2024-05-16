@@ -10,15 +10,12 @@ Globals:
     MemorySize: 4096
     Environment:
         Variables:
-          HOST: 13.233.136.178
+          HOST: 52.86.200.225
           DATABASE: postgres
           USER: postgres
-          PASSWORD: spidy20
-          OPENAI_MODEL_ID: gpt-4-1106-preview
-          COLLECTION_NAME: new_youtube_collection
-          MODEL_TEMP: 0.0
+          PASSWORD: utemia
+          COLLECTION_NAME: utemia_collection
           CHAT_HISTORY_MESSAGE_COUNT: 24
-          OPENAI_API_KEY: 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
 
 Resources:
   GenerateResponse:
@@ -37,7 +34,4 @@ Resources:
             Method: POST
       EphemeralStorage:
         Size: 2048
-      Description: "It read data from PlSQL RDS, and send back a response to user query. It supports chat-history."
-
-
-
+      Description: "Lee datos de PlSQL RDS y envía una respuesta a la consulta del usuario. Admite historial de chat."

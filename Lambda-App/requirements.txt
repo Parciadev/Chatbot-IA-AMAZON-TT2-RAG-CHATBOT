@@ -10,6 +10,6 @@ tiktoken
 psycopg
 psycopg-binary
 requests
-langchain_comunnity
-langchain_aws
-pgvector
+langchain-community
+langchain-aws
+langchain-core

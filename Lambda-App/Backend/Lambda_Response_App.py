@@ -18,16 +18,15 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 # Reading Environment variables
-host = os.environ.get('HOST', '54.87.215.156').strip()
+host = os.environ.get('HOST', '52.86.200.225').strip()
 database = os.environ.get('DATABASE', 'postgres').strip()
 user = os.environ.get('USER', 'postgres').strip()
 password = os.environ.get('PASSWORD', 'utemia').strip()
 collection_name = os.environ.get('COLLECTION_NAME', 'utemia_collection').strip()
-model_temp = float(os.environ.get('MODEL_TEMP', '0.0'))
 chat_hist_msg_count = int(os.environ.get('CHAT_HISTORY_MESSAGE_COUNT', '24').strip())
 
 # Initialize BedrockEmbeddings and Bedrock
-session = boto3.Session()
+session = boto3.Session(aws_access_key_id= 'AKIA6ODU3CS3GI2GBSGO' , aws_secret_access_key= '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' ,profile_name= 'default', region_name= 'us-east-1')
 embeddings = BedrockEmbeddings (credentials_profile_name= 'default',model_id='cohere.embed-multilingual-v3')
 llm = BedrockLLM (credentials_profile_name='default', model_id='anthropic.claude-v2', model_kwargs={ "max_tokens_to_sample":3000, "temperature": 0.9, "top_p": 0.9})
 
@@ -41,7 +40,7 @@ connection_string = PGVector.connection_string_from_db_params(
     password=password,
 )
 
-logger.info(f"The Connection String is: {connection_string}")
+logger.info(f"El codigo de conexion es: {connection_string}")
 
 
 class ResponseAPI:
@@ -147,7 +146,7 @@ def lambda_handler(event, context):
         # Check if 'body' is in the event
         if 'body' in event:
             # Print or log the event for debugging
-            logger.info(f"Event details: {event}")
+            logger.info(f"Detalle del evento: {event}")
             # Check if the value associated with 'body' is not None and not an empty string
             headers = event['headers']
             if event['body'] is not None and event['body'].strip():
@@ -160,7 +159,7 @@ def lambda_handler(event, context):
                     response = response_api.generate_response()
                     end_time = time.time()
                     response_time = round(end_time - start_time, 2)
-                    logger.info(f"Generated Response: {response}")
+                    logger.info(f"Respuesta Generada: {response}")
 
                     # Return success response
                     timestamps = datetime.now().strftime("%Y-%m-%d %H:%M:%S")

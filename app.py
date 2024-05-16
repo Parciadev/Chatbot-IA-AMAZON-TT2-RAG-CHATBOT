@@ -25,7 +25,7 @@ def generate_response(prompt_input):
         return send_resp
     else:
         print(response.text)
-        return "Ups, algo salio mal :(......., intentalo mas tarde)"
+        return "Ups, algo salio mal, intentalo mas tarde"
 
 
 # Check if 'messages' is already in st.session_state, if not initialize it
@@ -37,7 +37,7 @@ st.sidebar.title("Diseñado Por Pablo Garcia / German Ramirez")
 st.sidebar.info(st.session_state.session_id)
 st.sidebar.warning("NOTA: Actualizar la pagina olvidara la actual conversacion!")
 
-response_url = "https://vp4ohcklnc.execute-api.ap-south-1.amazonaws.com/Prod/response"
+response_url = "https://bqv26c0bdb.execute-api.us-east-1.amazonaws.com/Prod/response"
 
 llm_headers = {
     'Content-Type': 'text/plain',
