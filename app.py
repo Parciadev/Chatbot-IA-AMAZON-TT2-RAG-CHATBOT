@@ -37,7 +37,7 @@ st.sidebar.title("Diseñado Por Pablo Garcia / German Ramirez")
 st.sidebar.info(st.session_state.session_id)
 st.sidebar.warning("NOTA: Actualizar la pagina olvidara la actual conversacion!")
 
-response_url = "https://bqv26c0bdb.execute-api.us-east-1.amazonaws.com/Prod/response"
+response_url = " https://7fncwj3lt3.execute-api.us-east-1.amazonaws.com/Prod/response"
 
 llm_headers = {
     'Content-Type': 'text/plain',

@@ -18,7 +18,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 # Reading Environment variables
-host = os.environ.get('HOST', '52.86.200.225').strip()
+host = os.environ.get('HOST', '54.160.91.42').strip()
 database = os.environ.get('DATABASE', 'postgres').strip()
 user = os.environ.get('USER', 'postgres').strip()
 password = os.environ.get('PASSWORD', 'utemia').strip()
@@ -26,9 +26,9 @@ collection_name = os.environ.get('COLLECTION_NAME', 'utemia_collection').strip()
 chat_hist_msg_count = int(os.environ.get('CHAT_HISTORY_MESSAGE_COUNT', '24').strip())
 
 # Initialize BedrockEmbeddings and Bedrock
-session = boto3.Session(aws_access_key_id= 'AKIA6ODU3CS3GI2GBSGO' , aws_secret_access_key= '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' ,profile_name= 'default', region_name= 'us-east-1')
-embeddings = BedrockEmbeddings (credentials_profile_name= 'default',model_id='cohere.embed-multilingual-v3')
-llm = BedrockLLM (credentials_profile_name='default', model_id='anthropic.claude-v2', model_kwargs={ "max_tokens_to_sample":3000, "temperature": 0.9, "top_p": 0.9})
+session = boto3.Session()
+embeddings = BedrockEmbeddings (model_id='cohere.embed-multilingual-v3')
+llm = BedrockLLM (model_id='anthropic.claude-v2', model_kwargs={ "max_tokens_to_sample":3000, "temperature": 0.9, "top_p": 0.9})
 
 # Build the connection string
 connection_string = PGVector.connection_string_from_db_params(
@@ -147,10 +147,17 @@ def lambda_handler(event, context):
         if 'body' in event:
             # Print or log the event for debugging
             logger.info(f"Detalle del evento: {event}")
-            # Check if the value associated with 'body' is not None and not an empty string
             headers = event['headers']
-            if event['body'] is not None and event['body'].strip():
-                user_input = str(event['body']).strip()
+            
+            # Check if the value associated with 'body' is not None and not an empty string
+            body = event.get('body')
+            if body is not None and body.strip():
+                try:
+                    user_input = str(body).strip()
+                except ValueError:
+                    # Handle the case where event['body'] is not a string
+                    user_input = ''
+                
                 if 'session_id' in headers:
                     session_id = headers['session_id'].lower()
                     # Generate response
