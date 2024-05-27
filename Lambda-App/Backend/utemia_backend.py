@@ -1,6 +1,7 @@
 import os
 import boto3
 import logging
+from flask import Flask, request, jsonify
 from langchain.vectorstores.pgvector import PGVector
 from langchain.schema import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
@@ -18,7 +19,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 # Reading Environment variables
-host = os.environ.get('HOST', '54.160.91.42').strip()
+host = os.environ.get('HOST', '52.3.253.160').strip()
 database = os.environ.get('DATABASE', 'postgres').strip()
 user = os.environ.get('USER', 'postgres').strip()
 password = os.environ.get('PASSWORD', 'utemia').strip()
@@ -27,8 +28,8 @@ chat_hist_msg_count = int(os.environ.get('CHAT_HISTORY_MESSAGE_COUNT', '24').str
 
 # Initialize BedrockEmbeddings and Bedrock
 session = boto3.Session()
-embeddings = BedrockEmbeddings (model_id='cohere.embed-multilingual-v3')
-llm = BedrockLLM (model_id='anthropic.claude-v2', model_kwargs={ "max_tokens_to_sample":3000, "temperature": 0.9, "top_p": 0.9})
+embeddings = BedrockEmbeddings(model_id='cohere.embed-multilingual-v3')
+llm = BedrockLLM(model_id='anthropic.claude-v2', model_kwargs={"max_tokens_to_sample": 3000, "temperature": 0.9, "top_p": 0.9})
 
 # Build the connection string
 connection_string = PGVector.connection_string_from_db_params(
@@ -41,7 +42,6 @@ connection_string = PGVector.connection_string_from_db_params(
 )
 
 logger.info(f"El codigo de conexion es: {connection_string}")
-
 
 class ResponseAPI:
     def __init__(self, user_input, session_id):  # Setting default k=10
@@ -56,7 +56,7 @@ class ResponseAPI:
         cleaned_response = re.sub(r'[^a-zA-Z0-9\s,.!]', '', cleaned_response)
         return cleaned_response
 
-    def generate_response(self, ):
+    def generate_response(self):
         try:
             # Init retriver
             # Init store
@@ -86,6 +86,7 @@ class ResponseAPI:
                 connection_string=f"postgresql://{user}:{password}@{host}:5432/{database}",
                 session_id=self.session_id,
             )
+
             # Contextual prompt
             contextualize_q_system_prompt = """Dado un historial de chat y la última pregunta del usuario, 
             que podría hacer referencia al contexto en el historial del chat, formula una pregunta independiente que 
@@ -138,76 +139,60 @@ class ResponseAPI:
             return ai_msg.content
         except Exception as e:
             logger.error(e)
-            return e
+            return str(e)
 
+# Initialize Flask app
+app = Flask(__name__)
 
-def lambda_handler(event, context):
+@app.route('/query', methods=['POST'])
+def query():
     try:
-        # Check if 'body' is in the event
-        if 'body' in event:
-            # Print or log the event for debugging
-            logger.info(f"Detalle del evento: {event}")
-            headers = event['headers']
-            
-            # Check if the value associated with 'body' is not None and not an empty string
-            body = event.get('body')
-            if body is not None and body.strip():
-                try:
-                    user_input = str(body).strip()
-                except ValueError:
-                    # Handle the case where event['body'] is not a string
-                    user_input = ''
-                
-                if 'session_id' in headers:
-                    session_id = headers['session_id'].lower()
-                    # Generate response
-                    start_time = time.time()
-                    response_api = ResponseAPI(user_input, session_id=session_id)
-                    response = response_api.generate_response()
-                    end_time = time.time()
-                    response_time = round(end_time - start_time, 2)
-                    logger.info(f"Respuesta Generada: {response}")
+        if request.is_json:
+            data = request.get_json()
+            headers = request.headers
+            if 'user_input' in data and 'session_id' in headers:
+                user_input = data['user_input']
+                session_id = headers['session_id'].lower()
+                # Generate response
+                start_time = time.time()
+                response_api = ResponseAPI(user_input, session_id=session_id)
+                response = response_api.generate_response()
+                end_time = time.time()
+                response_time = round(end_time - start_time, 2)
+                logger.info(f"Generated Response: {response}")
 
-                    # Return success response
-                    timestamps = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                    response_dict = {"Status": "Success", "Query": user_input, "Response": response.strip()
-                        , "Timestamp": timestamps,
-                                     "ResponseTime": response_time}
-                    return {
-                        'statusCode': 200,
-                        'body': json.dumps(response_dict)
-                    }
-                # Return failure response for session_id missing
-                else:
-                    response_dict = {"Status": "Failed", "Reason": 'Bad Request: session_id is missing from headers', "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
-                    return {
-                        'statusCode': 400,
-                        'body': json.dumps(response_dict)
-                    }
-            else:
-                # Return failure response for None or empty body
+                # Return success response
                 timestamps = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                response_dict = {"Status": "Failed", "Reason": 'Bad Request: None or Empty Body',
-                                 "Timestamp": timestamps}
-                return {
-                    'statusCode': 400,
-                    'body': json.dumps(response_dict)
+                response_dict = {
+                    "Status": "Success",
+                    "Query": user_input,
+                    "Response": response.strip(),
+                    "Timestamp": timestamps,
+                    "ResponseTime": response_time
                 }
+                return jsonify(response_dict), 200
+            else:
+                response_dict = {
+                    "Status": "Failed",
+                    "Reason": 'Bad Request: Missing user_input or session_id',
+                    "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                }
+                return jsonify(response_dict), 400
         else:
-            # Return failure response for missing 'body' key
-            timestamps = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            response_dict = {"Status": "Failed", "Reason": 'Bad Request: Missing Body', "Timestamp": timestamps}
-            return {
-                'statusCode': 400,
-                'body': json.dumps(response_dict)
+            response_dict = {
+                "Status": "Failed",
+                "Reason": 'Unsupported Media Type: Did not attempt to load JSON data because the request Content-Type was not application/json.',
+                "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             }
-
+            return jsonify(response_dict), 415
     except Exception as e:
-        # Return error response
         logger.error(f"Error: {e}")
-        timestamps = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        response_dict = {"Status": "Error", "Reason": str(e), "Timestamp": timestamps}
-        return {
-            'statusCode': 500,
-            'body': json.dumps(response_dict)
+        response_dict = {
+            "Status": "Error",
+            "Reason": str(e),
+            "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
+        return jsonify(response_dict), 500
+
+if __name__ == '__main__':
+    app.run(debug=True)
