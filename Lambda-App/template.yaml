@@ -10,7 +10,7 @@ Globals:
     MemorySize: 4096
     Environment:
         Variables:
-          HOST: 52.86.200.225
+          HOST: 34.207.156.26
           DATABASE: postgres
           USER: postgres
           PASSWORD: utemia

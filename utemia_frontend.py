@@ -39,7 +39,7 @@ st.sidebar.warning("NOTA: Actualizar la pagina olvidara la actual conversacion!"
 
 st.image ("UTEM.png", use_column_width = True)
 
-response_url="http://localhost:5000/query"
+response_url="https://k1tc84gs5f.execute-api.us-east-1.amazonaws.com/Prod/response"
 
 llm_headers = {
     'Content-Type': 'text/plain',
