@@ -7,10 +7,12 @@ from langchain_core.runnables import RunnablePassthrough
 import json
 from datetime import datetime
 import time
-from langchain_community.embeddings import BedrockEmbeddings
+from langchain.chat_models import ChatOpenAI
+from langchain_openai import OpenAIEmbeddings
+#from langchain_community.embeddings import BedrockEmbeddings
+#from langchain_aws import BedrockLLM
 from langchain.memory import PostgresChatMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_aws import BedrockLLM
 import re
 
 # Set up logging
@@ -18,17 +20,21 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 # Reading Environment variables
-host = os.environ.get('HOST', '34.207.156.26').strip()
+host = os.environ.get('HOST', '100.25.154.92').strip()
 database = os.environ.get('DATABASE', 'postgres').strip()
 user = os.environ.get('USER', 'postgres').strip()
 password = os.environ.get('PASSWORD', 'utemia').strip()
 collection_name = os.environ.get('COLLECTION_NAME', 'utemia_collection').strip()
+openai_model_id = os.environ.get('OPENAI_MODEL_ID', 'gpt-3.5-turbo').strip()
+model_temp = float(os.environ.get('MODEL_TEMP', '0.0'))
 chat_hist_msg_count = int(os.environ.get('CHAT_HISTORY_MESSAGE_COUNT', '24').strip())
+openai_key = os.environ.get('OPENAI_API_KEY', "sk-proj-W5wleQFdUbMRHmbknp0oT3BlbkFJWd1nvKhL5RQNEIUTSxeg").strip()
+
 
 # Initialize BedrockEmbeddings and Bedrock
 session = boto3.Session()
-embeddings = BedrockEmbeddings(model_id='cohere.embed-multilingual-v3')
-llm = BedrockLLM(model_id='anthropic.claude-v2', model_kwargs={"max_tokens_to_sample": 4096, "temperature": 0.9, "top_p": 0.9})
+embeddings = OpenAIEmbeddings(model='text-embedding-3-small')
+llm = ChatOpenAI(temperature=model_temp, model=openai_model_id, max_tokens=512)
 
 # Build the connection string
 connection_string = PGVector.connection_string_from_db_params(

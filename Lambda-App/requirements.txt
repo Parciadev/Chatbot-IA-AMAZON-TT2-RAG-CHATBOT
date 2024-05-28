@@ -9,7 +9,9 @@ pgvector
 tiktoken
 psycopg
 psycopg-binary
+langchain-openai
 requests
 langchain-community
 langchain-aws
 langchain-core
+psycopg2-binary

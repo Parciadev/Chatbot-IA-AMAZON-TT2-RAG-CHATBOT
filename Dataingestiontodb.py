@@ -4,20 +4,22 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader, CSVLoader
 from langchain.vectorstores.pgvector import PGVector
 from langchain_community.document_loaders import UnstructuredExcelLoader
-from langchain_community.embeddings import BedrockEmbeddings
+from langchain_openai import OpenAIEmbeddings
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 # Reading Environment variables
-host = os.environ.get('HOST', '34.207.156.26').strip()
+host = os.environ.get('HOST', '100.25.154.92').strip()
 database = os.environ.get('DATABASE', 'postgres').strip()
 user = os.environ.get('USER', 'postgres').strip()
 password = os.environ.get('PASSWORD', 'utemia').strip()
 collection = os.environ.get('COLLECTION', 'utemia_collection').strip()
+openai_key = os.environ.get('OPENAI_API_KEY', "sk-proj-W5wleQFdUbMRHmbknp0oT3BlbkFJWd1nvKhL5RQNEIUTSxeg").strip()
+os.environ['OPENAI_API_KEY'] = openai_key
 
-# Initialize OpenAI or Bedrock Embeddings
-embeddings = BedrockEmbeddings(credentials_profile_name= 'default',model_id='cohere.embed-multilingual-v3')
+# Initialize OpenAI
+embeddings = OpenAIEmbeddings(model='text-embedding-3-small')
 
 # Build the connection string
 conenction_string = PGVector.connection_string_from_db_params(
@@ -71,8 +73,9 @@ class DocumentProcessor:
             collection_name=collection,
             connection_string=conenction_string,
         )
-        print(f"{self.file_path} is Pushed successfully into {collection}")
+        print(f"{self.file_path} a sido correctamente añadido a la coleccion: {collection}")
 
+# Add documents to the collection from the local folder "docs"
 for root, dirs, files in os.walk(docs_folder_path):
     for file in files:
         file_path = os.path.join(root, file)

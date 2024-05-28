@@ -1,7 +1,7 @@
 import psycopg2
 
 # Database connection parameters
-host = '34.207.156.26'
+host = '100.25.154.92' #Cambiar cada vez que se reinicie la instancia de AWS EC2 ya que la IP es dinamica
 dbname = 'postgres'
 user = 'postgres'
 password = 'utemia'

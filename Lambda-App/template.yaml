@@ -10,10 +10,13 @@ Globals:
     MemorySize: 4096
     Environment:
         Variables:
-          HOST: 34.207.156.26
+          HOST: 100.25.154.92
           DATABASE: postgres
           USER: postgres
           PASSWORD: utemia
+          OPENAI_MODEL_ID: gpt-3.5-turbo
+          OPENAI_API_KEY: sk-proj-W5wleQFdUbMRHmbknp0oT3BlbkFJWd1nvKhL5RQNEIUTSxeg
+          MODEL_TEMP: 0.9
           COLLECTION_NAME: utemia_collection
           CHAT_HISTORY_MESSAGE_COUNT: 24
 
