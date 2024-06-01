@@ -20,13 +20,13 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 # Reading Environment variables
-host = os.environ.get('HOST', '100.25.154.92').strip()
+host = os.environ.get('HOST', '100.26.173.3').strip()
 database = os.environ.get('DATABASE', 'postgres').strip()
 user = os.environ.get('USER', 'postgres').strip()
 password = os.environ.get('PASSWORD', 'utemia').strip()
-collection_name = os.environ.get('COLLECTION_NAME', 'utemia_collection').strip()
+collection_name = os.environ.get('COLLECTION_NAME', 'utemia_collection_1').strip()
 openai_model_id = os.environ.get('OPENAI_MODEL_ID', 'gpt-3.5-turbo').strip()
-model_temp = float(os.environ.get('MODEL_TEMP', '0.0'))
+model_temp = float(os.environ.get('MODEL_TEMP', '0.9'))
 chat_hist_msg_count = int(os.environ.get('CHAT_HISTORY_MESSAGE_COUNT', '24').strip())
 openai_key = os.environ.get('OPENAI_API_KEY', "sk-proj-W5wleQFdUbMRHmbknp0oT3BlbkFJWd1nvKhL5RQNEIUTSxeg").strip()
 
@@ -34,7 +34,7 @@ openai_key = os.environ.get('OPENAI_API_KEY', "sk-proj-W5wleQFdUbMRHmbknp0oT3Blb
 # Initialize BedrockEmbeddings and Bedrock
 session = boto3.Session()
 embeddings = OpenAIEmbeddings(model='text-embedding-3-small')
-llm = ChatOpenAI(temperature=model_temp, model=openai_model_id, max_tokens=512)
+llm = ChatOpenAI(temperature=model_temp, model=openai_model_id, max_tokens=1024)
 
 # Build the connection string
 connection_string = PGVector.connection_string_from_db_params(
@@ -74,11 +74,14 @@ class ResponseAPI:
 
             # Reading promp
             qa_system_prompt = """
-            Como Asistente de IA de UTEMIA, tu objetivo es proporcionar ayuda relacionada con preguntas académicas sobre la universidad y sus servicios. Sigue estos principios:
+            Como Asistente de IA llamado UTEMIA, tu objetivo es proporcionar ayuda relacionada con preguntas académicas sobre la universidad, el reglamento general de los estudiantes de pregrado y sus servicios. Sigue estos principios:
 
-            Cuando sea la primera conversación con el estudiante, siempre salúdalo con "Hola Estudiante, como Asistente de IA de UTEMIA ¿En qué puedo ayudarte?"
+            Cuando sea la primera conversación con el estudiante, siempre salúdalo con "Hola Estudiante, mi nombre es UTEMIA, Asistente de IA de la Universidad Tecnologica Metropolitana ¿En qué puedo ayudarte?"
             Comprende la respuesta del estudiante y luego proporciona respuestas de la base de datos de preguntas y respuestas disponibles.
-            Si no conoces la respuesta, simplemente menciona "No conozco sobre esto, por favor consulta la documentación de la universidad."
+            Si no conoces la respuesta, simplemente menciona "No puedo ayudarte con eso, ¿hay algo más en lo que pueda ayudarte?"
+            Siempre termina la conversación con "Gracias por usar UTEMIA, ¡Que tengas un buen día!"
+            Trata que tus respuestas sean los mas cortas y precisas en lo posible
+            Si la pregunta es ajena al contexto academico, reglamento, o temas relacionados en la universidad, simplemente menciona "No puedo ayudarte con eso, ¿hay algo más en lo que pueda ayudarte?"
             Asegúrate de que tu respuesta tenga una gramática correcta, esté organizada en puntos y esté adecuadamente explicada.
             Por favor genera la respuesta correctamente formateada en markdown. Si hay un salto de línea o espacio en la respuesta, por favor agrega un doble espacio y luego \n, para que pueda renderizar esa respuesta como markdown en mi aplicación.
 

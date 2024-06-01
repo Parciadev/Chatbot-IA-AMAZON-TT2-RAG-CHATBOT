@@ -10,11 +10,11 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 # Reading Environment variables
-host = os.environ.get('HOST', '100.25.154.92').strip()
+host = os.environ.get('HOST', '100.26.173.3').strip()
 database = os.environ.get('DATABASE', 'postgres').strip()
 user = os.environ.get('USER', 'postgres').strip()
 password = os.environ.get('PASSWORD', 'utemia').strip()
-collection = os.environ.get('COLLECTION', 'utemia_collection').strip()
+collection = os.environ.get('COLLECTION', 'utemia_collection_2').strip()
 openai_key = os.environ.get('OPENAI_API_KEY', "sk-proj-W5wleQFdUbMRHmbknp0oT3BlbkFJWd1nvKhL5RQNEIUTSxeg").strip()
 os.environ['OPENAI_API_KEY'] = openai_key
 
@@ -30,8 +30,8 @@ conenction_string = PGVector.connection_string_from_db_params(
     user=user,
     password=password,
 )
-logger.info(f"The Connection String is: {conenction_string}")
-logger.info(f"Collection name is : {collection}")
+logger.info(f"El codigo de conexion es: {conenction_string}")
+logger.info(f"El nombre de la colleccion de datos es : {collection}")
 
 docs_folder_path = os.path.join(os.path.dirname(__file__), "docs")
 
@@ -59,7 +59,7 @@ class DocumentProcessor:
             loader = UnstructuredExcelLoader(self.file_path, mode="elements")
 
         else:
-            raise ValueError(f"Unsupported file type: {file_extension}")
+            raise ValueError(f"Extension de archivo no soportada: {file_extension}")
 
         data = loader.load()
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=150)
