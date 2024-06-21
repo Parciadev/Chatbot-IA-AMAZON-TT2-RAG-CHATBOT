@@ -10,12 +10,12 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 # Reading Environment variables
-host = os.environ.get('HOST', '100.26.173.3').strip()
+host = os.environ.get('HOST', ' ').strip()
 database = os.environ.get('DATABASE', 'postgres').strip()
 user = os.environ.get('USER', 'postgres').strip()
 password = os.environ.get('PASSWORD', 'utemia').strip()
 collection = os.environ.get('COLLECTION', 'utemia_collection_2').strip()
-openai_key = os.environ.get('OPENAI_API_KEY', "sk-proj-W5wleQFdUbMRHmbknp0oT3BlbkFJWd1nvKhL5RQNEIUTSxeg").strip()
+openai_key = os.environ.get('OPENAI_API_KEY', " ").strip()
 os.environ['OPENAI_API_KEY'] = openai_key
 
 # Initialize OpenAI

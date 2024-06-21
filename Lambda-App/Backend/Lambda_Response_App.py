@@ -20,7 +20,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 # Reading Environment variables
-host = os.environ.get('HOST', '100.26.173.3').strip()
+host = os.environ.get('HOST', ' ').strip()
 database = os.environ.get('DATABASE', 'postgres').strip()
 user = os.environ.get('USER', 'postgres').strip()
 password = os.environ.get('PASSWORD', 'utemia').strip()
@@ -28,7 +28,7 @@ collection_name = os.environ.get('COLLECTION_NAME', 'utemia_collection_1').strip
 openai_model_id = os.environ.get('OPENAI_MODEL_ID', 'gpt-3.5-turbo').strip()
 model_temp = float(os.environ.get('MODEL_TEMP', '0.9'))
 chat_hist_msg_count = int(os.environ.get('CHAT_HISTORY_MESSAGE_COUNT', '24').strip())
-openai_key = os.environ.get('OPENAI_API_KEY', "sk-proj-W5wleQFdUbMRHmbknp0oT3BlbkFJWd1nvKhL5RQNEIUTSxeg").strip()
+openai_key = os.environ.get("'OPENAI_API_KEY',  ").strip()
 
 
 # Initialize BedrockEmbeddings and Bedrock

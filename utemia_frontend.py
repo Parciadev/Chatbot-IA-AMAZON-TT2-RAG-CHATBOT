@@ -30,16 +30,16 @@ def generate_response(prompt_input):
 
 # Check if 'messages' is already in st.session_state, if not initialize it
 if 'messages' not in st.session_state:
-    st.session_state.messages = [{"role": "assistant", "content": "Hola, soy el bot Utemia, tu asistente de AWS - OpenAI. ¿En qué puedo ayudarte hoy?"}]
+    st.session_state.messages = [{"role": "assistant", "content": "Hola, soy el Asistente de IA Utemia, ¿En qué puedo ayudarte hoy?"}]
 
-st.set_page_config(page_title="UTEMIA - AWS OPENAI RAG Chatbot ")
-st.sidebar.title("UTEMIA - AWS OPENAI RAG Chatbot")
-st.sidebar.text("Diseñado Por Pablo Garcia / German Ramirez")
+st.set_page_config(page_title="UTEMIA - AWS OPENAI RAG Chatbot")
+st.sidebar.title("UTEMIA - Tu Asistente Virtual IA RAG Chatbot ")
+st.sidebar.text("Diseñado Por Pablo Garcia")
 st.sidebar.info(st.session_state.session_id)
 st.sidebar.warning("NOTA: Actualizar la pagina olvidara la actual conversacion!")
 
 st.image ("UTEM.png", use_column_width=True)
-response_url="https://mcrue9r5vi.execute-api.us-east-1.amazonaws.com/Prod/response" # URL de la API Lambda en la instancia EC2, http://localhost:5000/generate-response si es testing local
+response_url=" " # URL de la API Lambda en la instancia EC2, http://localhost:5000/generate-response si es testing local
 
 llm_headers = {
     'Content-Type': 'text/plain',
