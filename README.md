@@ -1,7 +1,7 @@
 # Proyecto de titulo - RAG - Pablo Garcia / German Ramirez 
 
 ### Arquitectura del prototipo
-Imagen <img src="">
+<img src="https://github.com/Parciadev/Chatbot-IA-AMAZON-TT2-PFINAL/blob/main/Prototipo_final_TT2.png">
 
 ### Configuracion de ambiente de desarrollo (VScode)
 Video: https://youtu.be/MLhADojwmNs
